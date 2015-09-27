@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
+import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
@@ -36,7 +36,6 @@ public class HttpUtils {
     public static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
 
     private static OkHttpClient sHttpClient;
-    private static Gson mGson;
     private static DownloadReceiver mDownloadReceiver;
 
     private HttpUtils() {
@@ -50,16 +49,8 @@ public class HttpUtils {
             sHttpClient.setConnectTimeout(15, TimeUnit.SECONDS);
             sHttpClient.setReadTimeout(20, TimeUnit.SECONDS);
             sHttpClient.setWriteTimeout(20, TimeUnit.SECONDS);
-            mGson = new Gson();
         }
         return sHttpClient;
-    }
-
-    private static Gson getGson() {
-        if (mGson == null) {
-            mGson = new Gson();
-        }
-        return mGson;
     }
 
     public static Call get(String url, Callback callback) {
@@ -70,8 +61,7 @@ public class HttpUtils {
     }
 
     public static Call post(String url, Object jsonBody, Callback callback) {
-        RequestBody body = RequestBody.create(MEDIA_TYPE_JSON, getGson().toJson(jsonBody, jsonBody
-                .getClass()));
+        RequestBody body = RequestBody.create(MEDIA_TYPE_JSON, JSON.toJSONString(jsonBody));
         return post(url, body, callback);
     }
 

@@ -1,6 +1,6 @@
 package com.xxxifan.devbox.library.callbacks.http;
 
-import com.google.gson.Gson;
+import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class JsonCallback<T> extends HttpCallback<T> {
 
     @Override
     public void onResponse(Response response) throws IOException {
-        T result = new Gson().fromJson(response.body().string(), type);
+        T result = JSON.parseObject(response.body().string(), type);
         if (result == null) {
             postResult(null, new IOException("No available result"));
         } else {

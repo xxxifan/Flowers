@@ -1,6 +1,6 @@
 package com.xxxifan.devbox.library.callbacks.http;
 
-import com.google.gson.Gson;
+import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.Response;
 import com.xxxifan.devbox.library.entity.BaseEntity;
 
@@ -12,7 +12,7 @@ import java.io.IOException;
 public class SimpleJsonCallback extends HttpCallback<BaseEntity> {
     @Override
     public void onResponse(Response response) throws IOException {
-        BaseEntity result = new Gson().fromJson(response.body().string(), BaseEntity.class);
+        BaseEntity result = JSON.parseObject(response.body().string(), BaseEntity.class);
         if (result == null) {
             postResult(null, new IOException("No available result"));
         } else {
