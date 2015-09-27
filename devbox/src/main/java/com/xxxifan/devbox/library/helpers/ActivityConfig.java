@@ -43,7 +43,7 @@ public class ActivityConfig {
         ActivityConfig config = new ActivityConfig(activity);
         config.setToolbarColor(Devbox.getAppDelegate().getResources().getColor(R.color.colorPrimary));
         config.setUseToolbar(true);
-        config.setIsDarkToolbar(true);
+        config.setIsDarkToolbar(false);
         config.setShowHomeAsUpKey(true);
         config.setTranslucentStatusBar(true);
         config.setFitSystemWindow(true);

@@ -62,17 +62,25 @@ public class BasePagerActivity extends BaseActivity {
         if (fragments != null && !fragments.isEmpty()) {
             mViewPager.setAdapter(mPagerAdapter = new BasePagerAdapter(getSupportFragmentManager(),
                     fragments));
-            mPagerStrip.setViewPager(mViewPager);
+            if (mPagerStrip != null) {
+                mPagerStrip.setViewPager(mViewPager);
+            }
         } else {
-            mPagerStrip.setVisibility(View.GONE);
+            if (mPagerStrip != null) {
+                mPagerStrip.setVisibility(View.GONE);
+            }
         }
     }
 
     protected void setPagerStripEnabled(boolean enabled) {
+        if (mPagerStrip == null) {
+            return;
+        }
         if (enabled) {
             mPagerStrip.setVisibility(View.VISIBLE);
         } else {
             mPagerStrip.setVisibility(View.GONE);
+            mPagerStrip = null;
         }
     }
 

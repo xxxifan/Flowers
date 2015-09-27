@@ -6,10 +6,6 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="LightToolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-
-    </style>
-
     <style name="PagerIndicatorStyle">
         <item name="android:background">?colorPrimary</item>
         <item name="android:textColorPrimary">@color/white</item>
