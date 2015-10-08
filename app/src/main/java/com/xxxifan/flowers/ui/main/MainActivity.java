@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 
 import com.xxxifan.devbox.library.helpers.ActivityConfig;
 import com.xxxifan.devbox.library.ui.BasePagerActivity;
+import com.xxxifan.flowers.net.Meizhi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class MainActivity extends BasePagerActivity {
         if (fragments == null) {
             fragments = new ArrayList<>();
 
-
+            Meizhi.get();
         }
         return fragments;
     }

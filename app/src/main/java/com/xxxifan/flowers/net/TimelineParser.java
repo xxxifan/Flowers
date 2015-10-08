@@ -1,35 +1,92 @@
 package com.xxxifan.flowers.net;
 
+import android.text.TextUtils;
+
 import com.xxxifan.flowers.net.model.MeizhiPost;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by xifan on 15-9-29.
  */
 public class TimelineParser extends Parser {
 
-
-
+    private Element mElement;
 
     public TimelineParser(Element element) {
-        initElements(element);
+        mElement = element;
     }
 
-    private void initElements(Element element) {
+    public List<MeizhiPost> toList() {
+        Elements mainElements = mElement.getElementsByAttributeValue(KEY_ID, DIV_MAIN);
+        List<MeizhiPost> meizhiList = new ArrayList<>();
 
-        Elements contentElements = element.getElementsByAttributeValue(KEY_ID, DIV_CONTENT);
-        MeizhiPost meizhi;
+        int count = 0;
+        Elements contentElements = mainElements.attr(KEY_ID, DIV_CONTENT).first().children();
+        MeizhiPost meizhi = null;
         for (Element item : contentElements) {
-            meizhi = new MeizhiPost();
-            Elements aTag = item.getElementsByTag(TAG_A);
-            Elements imgTag = item.getElementsByTag(TAG_IMG);
-            meizhi.titile = aTag.attr(ATTR_TITLE);
-            meizhi.postUrl = aTag.attr(ATTR_HREF);
-            meizhi.coverUrl = imgTag.attr(ATTR_SRC);
+            if (item.className().equals(CLASS_POST_META)) {
+                Elements pTags = item.getElementsByTag(TAG_P);
+                for (int i = 0; i < pTags.size(); i++) {
+                    String tags = pTags.get(i).text();
+                    if (!TextUtils.isEmpty(tags) && tags.startsWith("Tags:")) {
+                        meizhi = new MeizhiPost();
+                        meizhi.tags = tags.replace("Tags:", "").trim().split(",");
+                        meizhiList.add(count, meizhi);
+                        break;
+                    }
+                }
+            } else if (item.className().equals(CLASS_POST_CONTENT)) {
+                if (count >= meizhiList.size() || meizhiList.get(count) == null) {
+                    continue;
+                }
+                Elements aTags = item.getElementsByTag(TAG_A);
+                for (int i = 0; i < aTags.size(); i++) {
+                    Element tag = aTags.get(i);
+                    if (!TextUtils.isEmpty(tag.toString())) {
+                        meizhi = meizhiList.get(count);
+                        meizhi.titile = tag.attr(ATTR_TITLE);
+                        meizhi.postUrl = tag.attr(ATTR_HREF);
+                        Elements imgTags = tag.getElementsByTag(TAG_IMG);
+                        meizhi.coverUrl = imgTags.attr(ATTR_SRC);
 
+                        // get date info
+                        String str = meizhi.coverUrl;
+                        int end = str.indexOf("/01.jpg") - 1;
+                        int idStart = str.lastIndexOf("/", end);
+                        if (idStart >= 0) {
+                            String id = str.substring(idStart + 1, end + 1);
+                            int monthStart = str.lastIndexOf("/", idStart - 1);
+                            if (monthStart >= 0) {
+                                String month = str.substring(monthStart + 1, idStart);
+                                int yearStart = str.lastIndexOf("/", monthStart - 1);
+                                if (yearStart >= 0) {
+                                    String year = str.substring(yearStart + 1, monthStart);
+
+                                    meizhi.imgYear = year.replace("a", "");
+                                    meizhi.imgMonth = month;
+                                    meizhi.imgId = id;
+                                }
+                            }
+                        }
+
+                        meizhiList.set(count, meizhi);
+                        count++;
+                        break;
+                    }
+                }
+            }
+
+            if (meizhi != null && !TextUtils.isEmpty(meizhi.titile) && meizhi.tags != null) {
+                meizhiList.add(meizhi);
+            }
         }
+
+        return meizhiList;
     }
 
 
