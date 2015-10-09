@@ -28,6 +28,7 @@ public class Meizhi {
 
     public static void get(int page, final GetMeizhiCallback callback) {
         String homeUrl = MEIZITU + String.format(SUFFIX_HOME_LIST, page);
+        Log.e(Meizhi.class, "Loading page " + page);
         HttpUtils.get(homeUrl, new HttpCallback<List<MeizhiPost>>() {
             @Override
             public void onResponse(Response response) throws IOException {

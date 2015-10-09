@@ -53,7 +53,7 @@ public class MeizhiFragment extends BaseFragment {
     @Override
     protected boolean onDataLoad() {
         Meizhi.get(page, new MeizhiPageCallback());
-        return super.onDataLoad();
+        return true;
     }
 
     @Override
@@ -66,8 +66,11 @@ public class MeizhiFragment extends BaseFragment {
 
         @Override
         public void onMeizhi(List<MeizhiPost> meizhiList) {
-            mMeizhi = meizhiList;
-            count = 0;
+            if (mMeizhi == null) {
+                mMeizhi = meizhiList;
+            } else {
+                mMeizhi.addAll(meizhiList);
+            }
             MeizhiPost post = meizhiList.get(count);
             Glide.with(getContext()).load(post.coverUrl).into(meizhiView);
         }
