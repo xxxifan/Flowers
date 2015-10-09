@@ -33,7 +33,7 @@ public abstract class HttpCallback<T> implements Callback {
     /**
      * postResult to switch to main thread
      */
-    protected void postResult(Object result, IOException e) {
+    protected void postResult(T result, IOException e) {
         Message message = mResultHandler.obtainMessage();
         if (result != null) {
             message.what = 1;

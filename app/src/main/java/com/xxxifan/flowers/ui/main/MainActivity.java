@@ -1,16 +1,12 @@
 package com.xxxifan.flowers.ui.main;
 
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.view.View;
 
 import com.xxxifan.devbox.library.helpers.ActivityConfig;
-import com.xxxifan.devbox.library.ui.BasePagerActivity;
-import com.xxxifan.flowers.net.Meizhi;
+import com.xxxifan.devbox.library.ui.BaseActivity;
+import com.xxxifan.flowers.R;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MainActivity extends BasePagerActivity {
+public class MainActivity extends BaseActivity {
 
     @Override
     protected void onConfigureActivity(ActivityConfig config) {
@@ -18,19 +14,13 @@ public class MainActivity extends BasePagerActivity {
     }
 
     @Override
-    protected List<Fragment> initFragments(Bundle savedInstanceState) {
-        List<Fragment> fragments = super.initFragments(savedInstanceState);
-        if (fragments == null) {
-            fragments = new ArrayList<>();
-
-            Meizhi.get(1);
-        }
-        return fragments;
+    protected int getLayoutId() {
+        return R.layout.activity_container;
     }
 
     @Override
-    protected void setupViewPager(List<Fragment> fragments) {
-        super.setupViewPager(fragments);
-        setPagerStripEnabled(false);
+    protected void initView(View rootView) {
+        MeizhiFragment fragment = new MeizhiFragment();
+        showFragment(fragment);
     }
 }

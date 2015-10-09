@@ -1,6 +1,5 @@
 package com.xxxifan.flowers.net;
 
-import com.xxxifan.devbox.library.tools.Log;
 import com.xxxifan.flowers.net.model.MeizhiPost;
 
 import org.jsoup.nodes.Element;
@@ -56,7 +55,6 @@ public class TimelineParser extends Parser {
             meizhi.postUrl = aElement.attr(ATTR_HREF);
             meizhi.coverUrl = imgUrl;
             meizhi.titile = removeTags(imgElement.attr(ATTR_ALT));
-            Log.e(this, meizhi.toString());
             meizhiList.add(meizhi);
         }
 
