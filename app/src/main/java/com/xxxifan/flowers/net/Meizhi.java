@@ -1,11 +1,10 @@
 package com.xxxifan.flowers.net;
 
-import android.util.Log;
-
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.xxxifan.devbox.library.tools.HttpUtils;
+import com.xxxifan.devbox.library.tools.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -18,12 +17,14 @@ import java.nio.charset.Charset;
  */
 public class Meizhi {
     public static final String MEIZITU = "http://www.meizitu.com/";
+    public static final String SUFFIX_HOME_LIST = "a/list_1_%s.html";
     public static final String IMG_URL_BASE = "http://pic.meizitu.com/wp-content/uploads/";
 
     private Meizhi(){}
 
-    public static void get() {
-        HttpUtils.get(MEIZITU, new Callback() {
+    public static void get(int page) {
+        String homeUrl = MEIZITU + String.format(SUFFIX_HOME_LIST, page);
+        HttpUtils.get(homeUrl, new Callback() {
 
             @Override
             public void onResponse(Response response) throws IOException {
@@ -34,7 +35,7 @@ public class Meizhi {
 
             @Override
             public void onFailure(Request request, IOException e) {
-                Log.e("","onFailure");
+                Log.e(this, "onFailure");
             }
         });
     }

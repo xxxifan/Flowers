@@ -23,7 +23,7 @@ public class MainActivity extends BasePagerActivity {
         if (fragments == null) {
             fragments = new ArrayList<>();
 
-            Meizhi.get();
+            Meizhi.get(1);
         }
         return fragments;
     }

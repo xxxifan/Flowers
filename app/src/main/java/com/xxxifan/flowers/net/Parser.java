@@ -15,7 +15,15 @@ public class Parser {
     public static final String ATTR_TITLE = "title";
     public static final String ATTR_HREF = "href";
     public static final String ATTR_SRC = "src";
-    public static final String CLASS_POST_META = "postmeta  clearfix";
+    public static final String ATTR_ALT = "alt";
+    public static final String CLASS_LIST = "wp-list";
+    public static final String CLASS_POST_META = "postmeta";
     public static final String CLASS_POST_CONTENT = "postContent";
     public static final String CLASS_DAY = "day";
+
+    private static final String tagPattern = "<[^>]*>";
+
+    public static String removeTags(String str) {
+        return str.replaceAll(tagPattern, "");
+    }
 }
