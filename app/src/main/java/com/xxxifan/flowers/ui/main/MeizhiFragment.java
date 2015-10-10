@@ -2,9 +2,12 @@ package com.xxxifan.flowers.ui.main;
 
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.xxxifan.devbox.library.ui.BaseFragment;
+import com.xxxifan.flowers.App;
 import com.xxxifan.flowers.R;
 import com.xxxifan.flowers.net.Meizhi;
 import com.xxxifan.flowers.net.callback.GetMeizhiCallback;
@@ -23,6 +26,9 @@ public class MeizhiFragment extends BaseFragment {
 
     @Bind(R.id.meizhi_view)
     ImageView meizhiView;
+    @Bind(R.id.meizhi_title)
+    TextView meizhiTitle;
+
     private List<MeizhiPost> mMeizhi;
     private int count;
     private int page = 1;
@@ -41,6 +47,9 @@ public class MeizhiFragment extends BaseFragment {
                 if (mMeizhi != null) {
                     if (count < mMeizhi.size() - 1) {
                         count++;
+                        Toast.makeText(App.get(), "loading meizhi" + mMeizhi.get(count).coverUrl, Toast.LENGTH_SHORT).show();
+
+                        meizhiTitle.setText(mMeizhi.get(count).titile);
                         Glide.with(getContext()).load(mMeizhi.get(count).coverUrl).into(meizhiView);
                     } else {
                         Meizhi.get(++page, new MeizhiPageCallback());
@@ -72,6 +81,7 @@ public class MeizhiFragment extends BaseFragment {
                 mMeizhi.addAll(meizhiList);
             }
             MeizhiPost post = meizhiList.get(count);
+            Toast.makeText(App.get(), "loading meizhi1" + mMeizhi.get(count).coverUrl, Toast.LENGTH_SHORT).show();
             Glide.with(getContext()).load(post.coverUrl).into(meizhiView);
         }
 

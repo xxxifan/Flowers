@@ -1,10 +1,13 @@
 package com.xxxifan.flowers.net;
 
+import android.widget.Toast;
+
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.xxxifan.devbox.library.callbacks.http.HttpCallback;
 import com.xxxifan.devbox.library.tools.HttpUtils;
 import com.xxxifan.devbox.library.tools.Log;
+import com.xxxifan.flowers.App;
 import com.xxxifan.flowers.net.callback.GetMeizhiCallback;
 import com.xxxifan.flowers.net.model.MeizhiPost;
 
@@ -28,7 +31,7 @@ public class Meizhi {
 
     public static void get(int page, final GetMeizhiCallback callback) {
         String homeUrl = MEIZITU + String.format(SUFFIX_HOME_LIST, page);
-        Log.e(Meizhi.class, "Loading page " + page);
+        Toast.makeText(App.get(), "loading page " + homeUrl, Toast.LENGTH_SHORT).show();
         HttpUtils.get(homeUrl, new HttpCallback<List<MeizhiPost>>() {
             @Override
             public void onResponse(Response response) throws IOException {
