@@ -1,6 +1,7 @@
 package com.xxxifan.flowers.ui.main;
 
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by xifan on 15-9-28.
@@ -25,9 +27,15 @@ import butterknife.ButterKnife;
 public class MeizhiFragment extends BaseFragment {
 
     @Bind(R.id.meizhi_view)
-    ImageView meizhiView;
+    ImageView mMeizhiView;
     @Bind(R.id.meizhi_title)
-    TextView meizhiTitle;
+    TextView mTitleText;
+    @Bind(R.id.meizhi_like)
+    Button mLikeBtn;
+    @Bind(R.id.meizhi_more)
+    Button mMoreBtn;
+    @Bind(R.id.meizhi_unlike)
+    Button nextBtn;
 
     private List<MeizhiPost> mMeizhi;
     private int count;
@@ -41,22 +49,6 @@ public class MeizhiFragment extends BaseFragment {
     @Override
     protected void initView(View rootView) {
         ButterKnife.bind(this, rootView);
-        meizhiView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mMeizhi != null) {
-                    if (count < mMeizhi.size() - 1) {
-                        count++;
-                        Toast.makeText(App.get(), "loading meizhi" + mMeizhi.get(count).coverUrl, Toast.LENGTH_SHORT).show();
-
-                        meizhiTitle.setText(mMeizhi.get(count).titile);
-                        Glide.with(getContext()).load(mMeizhi.get(count).coverUrl).into(meizhiView);
-                    } else {
-                        Meizhi.get(++page, new MeizhiPageCallback());
-                    }
-                }
-            }
-        });
     }
 
     @Override
@@ -71,6 +63,40 @@ public class MeizhiFragment extends BaseFragment {
         ButterKnife.unbind(this);
     }
 
+    @OnClick(R.id.meizhi_like)
+    public void onLikeClick(View view) {
+        // TODO: 15-10-11 mark as like
+        nextMeizhi();
+    }
+
+    @OnClick(R.id.meizhi_more)
+    public void onMoreClick(View view) {
+        // TODO: 15-10-11 mark as like and show more
+    }
+
+    @OnClick(R.id.meizhi_unlike)
+    public void onUnlikeClick(View view) {
+        // TODO: 15-10-11 mark as unlike
+        nextMeizhi();
+    }
+
+    private void nextMeizhi() {
+        if (mMeizhi != null) {
+            if (count < mMeizhi.size() - 1) {
+                count++;
+                setupMeizhi(mMeizhi.get(count));
+            } else {
+                Meizhi.get(++page, new MeizhiPageCallback());
+            }
+        }
+    }
+
+    private void setupMeizhi(MeizhiPost post) {
+        Toast.makeText(App.get(), "loading meizhi" + mMeizhi.get(count).coverUrl, Toast.LENGTH_SHORT).show();
+        Glide.with(getContext()).load(post.coverUrl).into(mMeizhiView);
+        mTitleText.setText(mMeizhi.get(count).titile);
+    }
+
     private class MeizhiPageCallback implements GetMeizhiCallback {
 
         @Override
@@ -81,8 +107,7 @@ public class MeizhiFragment extends BaseFragment {
                 mMeizhi.addAll(meizhiList);
             }
             MeizhiPost post = meizhiList.get(count);
-            Toast.makeText(App.get(), "loading meizhi1" + mMeizhi.get(count).coverUrl, Toast.LENGTH_SHORT).show();
-            Glide.with(getContext()).load(post.coverUrl).into(meizhiView);
+            setupMeizhi(post);
         }
 
         @Override
