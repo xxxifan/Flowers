@@ -54,7 +54,7 @@ public class TimelineParser extends Parser {
 
             meizhi.postUrl = aElement.attr(ATTR_HREF);
             meizhi.coverUrl = imgUrl;
-            meizhi.titile = removeTags(imgElement.attr(ATTR_ALT));
+            meizhi.title = removeTags(imgElement.attr(ATTR_ALT));
             meizhiList.add(meizhi);
         }
 

@@ -1,5 +1,6 @@
 package com.xxxifan.flowers.ui.main;
 
+import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -7,14 +8,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.xxxifan.devbox.library.AppPref;
 import com.xxxifan.devbox.library.ui.BaseFragment;
 import com.xxxifan.flowers.App;
+import com.xxxifan.flowers.Keys;
 import com.xxxifan.flowers.R;
+import com.xxxifan.flowers.event.NewPostsEvent;
 import com.xxxifan.flowers.net.Meizhi;
 import com.xxxifan.flowers.net.callback.GetMeizhiCallback;
 import com.xxxifan.flowers.net.model.MeizhiPost;
 
-import java.io.IOException;
 import java.util.List;
 
 import butterknife.Bind;
@@ -37,7 +40,8 @@ public class MeizhiFragment extends BaseFragment {
     @Bind(R.id.meizhi_unlike)
     Button nextBtn;
 
-    private List<MeizhiPost> mMeizhi;
+    private Meizhi mMeizhi;
+    private List<MeizhiPost> mPosts;
     private int count;
     private int page = 1;
 
@@ -49,17 +53,22 @@ public class MeizhiFragment extends BaseFragment {
     @Override
     protected void initView(View rootView) {
         ButterKnife.bind(this, rootView);
+        mMeizhi = new Meizhi();
     }
 
     @Override
     protected boolean onDataLoad() {
-        Meizhi.get(page, new MeizhiPageCallback());
+        mMeizhi.get(page, new MeizhiPageCallback());
         return true;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (mPosts != null) {
+            MeizhiPost lastPost = mPosts.get(count);
+            AppPref.putInt(Keys.LAST_POST_ID, lastPost.getPostId());
+        }
         ButterKnife.unbind(this);
     }
 
@@ -80,38 +89,75 @@ public class MeizhiFragment extends BaseFragment {
         nextMeizhi();
     }
 
+    public void onEventMainThread(NewPostsEvent event) {
+        Snackbar.make(mTitleText, R.string.tip_new_flowers_ready, Snackbar.LENGTH_SHORT)
+                .setAction(R.string.btn_view, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mMeizhi == null) {
+                            mMeizhi = new Meizhi();
+                        }
+                        mMeizhi.getNewest(new MeizhiNewestCallback());
+                    }
+                })
+                .show();
+    }
+
     private void nextMeizhi() {
-        if (mMeizhi != null) {
-            if (count < mMeizhi.size() - 1) {
+        if (mPosts != null) {
+            if (count < mPosts.size() - 1) {
                 count++;
-                setupMeizhi(mMeizhi.get(count));
+                setupMeizhi(mPosts.get(count));
             } else {
-                Meizhi.get(++page, new MeizhiPageCallback());
+                mMeizhi.get(++page, new MeizhiPageCallback());
             }
         }
     }
 
     private void setupMeizhi(MeizhiPost post) {
-        Toast.makeText(App.get(), "loading meizhi" + mMeizhi.get(count).coverUrl, Toast.LENGTH_SHORT).show();
+        Toast.makeText(App.get(), "loading meizhi" + mPosts.get(count).coverUrl, Toast.LENGTH_SHORT).show();
         Glide.with(getContext()).load(post.coverUrl).into(mMeizhiView);
-        mTitleText.setText(mMeizhi.get(count).titile);
+        mTitleText.setText(mPosts.get(count).title);
     }
 
     private class MeizhiPageCallback implements GetMeizhiCallback {
 
         @Override
         public void onMeizhi(List<MeizhiPost> meizhiList) {
-            if (mMeizhi == null) {
-                mMeizhi = meizhiList;
+            if (mPosts == null) {
+                mPosts = meizhiList;
             } else {
-                mMeizhi.addAll(meizhiList);
+                mPosts.addAll(meizhiList);
             }
             MeizhiPost post = meizhiList.get(count);
             setupMeizhi(post);
         }
 
         @Override
-        public void onError(IOException e) {
+        public void onError(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private class MeizhiNewestCallback implements GetMeizhiCallback {
+
+        @Override
+        public void onMeizhi(List<MeizhiPost> meizhiList) {
+            if (meizhiList != null) {
+                if (mPosts == null) {
+                    mPosts = meizhiList;
+                } else {
+                    mPosts.addAll(0, meizhiList);
+                }
+
+                count = 0;
+                MeizhiPost post = meizhiList.get(count);
+                setupMeizhi(post);
+            }
+        }
+
+        @Override
+        public void onError(Exception e) {
             e.printStackTrace();
         }
     }

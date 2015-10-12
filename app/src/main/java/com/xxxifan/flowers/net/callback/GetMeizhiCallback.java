@@ -2,7 +2,6 @@ package com.xxxifan.flowers.net.callback;
 
 import com.xxxifan.flowers.net.model.MeizhiPost;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -11,5 +10,5 @@ import java.util.List;
 public interface GetMeizhiCallback {
     void onMeizhi(List<MeizhiPost> meizhiList);
 
-    void onError(IOException e);
+    void onError(Exception e);
 }
