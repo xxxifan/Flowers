@@ -10,7 +10,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.xxxifan.devbox.library.AppPref;
 import com.xxxifan.devbox.library.ui.BaseFragment;
-import com.xxxifan.flowers.App;
 import com.xxxifan.flowers.Keys;
 import com.xxxifan.flowers.R;
 import com.xxxifan.flowers.event.NewPostsEvent;
@@ -40,10 +39,13 @@ public class MeizhiFragment extends BaseFragment {
     @Bind(R.id.meizhi_unlike)
     Button nextBtn;
 
+    @Bind(R.id.meizhi_intro)
+    TextView mIntroText;
+
     private Meizhi mMeizhi;
     private List<MeizhiPost> mPosts;
-    private int count;
-    private int page = 1;
+    private int mCount;
+    private boolean mIsLoadingPage;
 
     @Override
     protected int getLayoutId() {
@@ -58,7 +60,8 @@ public class MeizhiFragment extends BaseFragment {
 
     @Override
     protected boolean onDataLoad() {
-        mMeizhi.get(page, new MeizhiPageCallback());
+        setIsLoadingPage(true);
+        mMeizhi.get(new MeizhiPageCallback());
         return true;
     }
 
@@ -66,8 +69,13 @@ public class MeizhiFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         if (mPosts != null) {
-            MeizhiPost lastPost = mPosts.get(count);
-            AppPref.putInt(Keys.LAST_POST_ID, lastPost.getPostId());
+            MeizhiPost lastPost = mPosts.get(mCount);
+            if (lastPost != null) {
+                AppPref.putInt(Keys.LAST_POST_ID, lastPost.getPostId());
+            }
+            if (mMeizhi != null) {
+                AppPref.putInt(Keys.LAST_PAGE, mMeizhi.getPage());
+            }
         }
         ButterKnife.unbind(this);
     }
@@ -104,32 +112,45 @@ public class MeizhiFragment extends BaseFragment {
     }
 
     private void nextMeizhi() {
-        if (mPosts != null) {
-            if (count < mPosts.size() - 1) {
-                count++;
-                setupMeizhi(mPosts.get(count));
+        if (mPosts != null && !isLoadingPage()) {
+            if (mCount < mPosts.size() - 1) {
+                mCount++;
+                setupMeizhi(mPosts.get(mCount));
             } else {
-                mMeizhi.get(++page, new MeizhiPageCallback());
+                setIsLoadingPage(true);
+                mMeizhi.get(new MeizhiPageCallback());
+                Toast.makeText(getContext(), R.string.msg_wait_page, Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     private void setupMeizhi(MeizhiPost post) {
-        Toast.makeText(App.get(), "loading meizhi" + mPosts.get(count).coverUrl, Toast.LENGTH_SHORT).show();
+        mIntroText.setText(mPosts.get(mCount).coverUrl);
         Glide.with(getContext()).load(post.coverUrl).into(mMeizhiView);
-        mTitleText.setText(mPosts.get(count).title);
+        mTitleText.setText(mPosts.get(mCount).title);
+    }
+
+    private boolean isLoadingPage() {
+        return mIsLoadingPage;
+    }
+
+    private void setIsLoadingPage(boolean loading) {
+        mIsLoadingPage = loading;
     }
 
     private class MeizhiPageCallback implements GetMeizhiCallback {
 
         @Override
         public void onMeizhi(List<MeizhiPost> meizhiList) {
-            if (mPosts == null) {
-                mPosts = meizhiList;
-            } else {
-                mPosts.addAll(meizhiList);
+            setIsLoadingPage(false);
+
+            if (mPosts != null) {
+                mPosts.clear();
             }
-            MeizhiPost post = meizhiList.get(count);
+            mPosts = meizhiList;
+
+            mCount = 0;
+            MeizhiPost post = meizhiList.get(mCount);
             setupMeizhi(post);
         }
 
@@ -143,6 +164,8 @@ public class MeizhiFragment extends BaseFragment {
 
         @Override
         public void onMeizhi(List<MeizhiPost> meizhiList) {
+            setIsLoadingPage(false);
+
             if (meizhiList != null) {
                 if (mPosts == null) {
                     mPosts = meizhiList;
@@ -150,8 +173,8 @@ public class MeizhiFragment extends BaseFragment {
                     mPosts.addAll(0, meizhiList);
                 }
 
-                count = 0;
-                MeizhiPost post = meizhiList.get(count);
+                mCount = 0;
+                MeizhiPost post = meizhiList.get(mCount);
                 setupMeizhi(post);
             }
         }
