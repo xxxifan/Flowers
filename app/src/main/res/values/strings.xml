@@ -5,4 +5,5 @@
     <string name="tip_new_flowers_ready">有%s片新鲜花瓣已为您准备好了</string>
     <string name="btn_view">点击查看</string>
     <string name="msg_wait_page">请稍候&#8230;</string>
+    <string name="title_activity_meizhi_view">MeizhiViewActivity</string>
 </resources>

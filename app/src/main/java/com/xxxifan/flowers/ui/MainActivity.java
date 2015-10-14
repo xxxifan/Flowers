@@ -1,10 +1,11 @@
-package com.xxxifan.flowers.ui.main;
+package com.xxxifan.flowers.ui;
 
 import android.view.View;
 
 import com.xxxifan.devbox.library.helpers.ActivityConfig;
 import com.xxxifan.devbox.library.ui.BaseActivity;
 import com.xxxifan.flowers.R;
+import com.xxxifan.flowers.ui.main.MeizhiFragment;
 
 public class MainActivity extends BaseActivity {
 

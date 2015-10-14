@@ -45,10 +45,6 @@ public class Meizhi {
         mLastPage = AppPref.getInt(Keys.LAST_PAGE, 0);
     }
 
-    public int getPage() {
-        return mPage;
-    }
-
     public void get(GetMeizhiCallback callback) {
         if (mPage == 0) {
             mIsInitial = true;
@@ -58,6 +54,12 @@ public class Meizhi {
             mPage++;
             mIsInitial = false;
             loadPage(mPage, callback);
+        }
+    }
+
+    public void getNewest(GetMeizhiCallback callback) {
+        if (callback != null) {
+            callback.onMeizhi(newMeizhi);
         }
     }
 
@@ -196,9 +198,8 @@ public class Meizhi {
         });
     }
 
-    public void getNewest(GetMeizhiCallback callback) {
-        if (callback != null) {
-            callback.onMeizhi(newMeizhi);
-        }
+    public int getPage() {
+        return mPage;
     }
+
 }
