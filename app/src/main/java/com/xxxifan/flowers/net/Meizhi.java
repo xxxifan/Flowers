@@ -181,15 +181,17 @@ public class Meizhi {
                         while (cacheIndex < cacheSize) {
                             cachePost = list.get(cacheIndex);
                             // find latest Meizhi, once it newer than cache posts, loop end.
-                            while (cachePost.getPostId() > latestMeizhi.getPostId()) {
+                            while (cachePost.getPostId() >= latestMeizhi.getPostId()) {
                                 if (postIndex >= 1) {
                                     latestMeizhi = posts.get(--postIndex);
+                                } else {
+                                    break;
                                 }
                             }
 
-                            // if not found, loop next cache, else new posts start from here.
+                            // if not found, then no newer posts, else new posts start from here.
                             if (cachePost.getPostId() >= latestMeizhi.getPostId()) {
-                                cacheIndex++;
+                                break;
                             } else if (cachePost.getPostId() < latestMeizhi.getPostId()) {
                                 if (mIsInitial) {
                                     if (newMeizhi == null) {
