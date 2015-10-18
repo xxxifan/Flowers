@@ -64,6 +64,18 @@ public class MeizhiFragment extends BaseFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        registerEventBus(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unregisterEventBus(this);
+    }
+
+    @Override
     protected boolean onDataLoad() {
         setIsLoadingPage(true);
         mMeizhi.get(new MeizhiPageCallback());
@@ -112,7 +124,7 @@ public class MeizhiFragment extends BaseFragment {
     }
 
     public void onEventMainThread(NewPostsEvent event) {
-        Snackbar.make(mTitleText, R.string.tip_new_flowers_ready, Snackbar.LENGTH_SHORT)
+        Snackbar.make(mTitleText, getString(R.string.tip_new_flowers_ready, event.num), Snackbar.LENGTH_LONG)
                 .setAction(R.string.btn_view, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

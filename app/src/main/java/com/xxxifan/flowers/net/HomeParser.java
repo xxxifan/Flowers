@@ -26,7 +26,7 @@ public class HomeParser extends MeizhiParser {
         Elements contentElements = mainElements.attr(KEY_ID, DIV_CONTENT).first().children();
         MeizhiPost meizhi = null;
         for (Element item : contentElements) {
-            if (item.className().equals(CLASS_POST_META)) {
+            if (item.className().startsWith(CLASS_POST_META)) {
                 Elements pTags = item.getElementsByTag(TAG_P);
                 for (int i = 0; i < pTags.size(); i++) {
                     String tags = pTags.get(i).text();
@@ -76,10 +76,6 @@ public class HomeParser extends MeizhiParser {
                         break;
                     }
                 }
-            }
-
-            if (meizhi != null && !TextUtils.isEmpty(meizhi.title) && meizhi.tags != null) {
-                meizhiList.add(meizhi);
             }
         }
 

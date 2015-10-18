@@ -34,13 +34,11 @@ public class Meizhi {
     public static final String IMG_URL_BASE = "http://pic.meizitu.com/wp-content/uploads/";
 
     private static final int PAGE_SIZE = 30;
-
-    private List<MeizhiPost> newMeizhi;
-    private List<MeizhiPost> cacheMeizhi;
-    private boolean mIsInitial;
-    private int mPage;
     // last cached page
     private final int mLastPage;
+    private List<MeizhiPost> newMeizhi;
+    private boolean mIsInitial;
+    private int mPage;
 
     public Meizhi() {
         mLastPage = AppPref.getInt(Keys.LAST_PAGE, 0);
@@ -50,13 +48,14 @@ public class Meizhi {
         if (mPage == 0) {
             mIsInitial = true;
             mPage = mLastPage == 0 ? 1 : mLastPage;
-            loadCachePage(mPage, callback);
+            loadPage(mPage, callback);
         } else {
             mPage++;
             mIsInitial = false;
-            loadPage(mPage, callback);
+            loadServerPage(mPage, callback);
         }
     }
+
 
     public void getNewest(GetMeizhiCallback callback) {
         if (callback != null) {
@@ -64,23 +63,23 @@ public class Meizhi {
         }
     }
 
-    private void loadCachePage(int page, final GetMeizhiCallback callback) {
+    private void loadPage(int page, final GetMeizhiCallback callback) {
         final int lastPostId = AppPref.getInt(Keys.LAST_POST_ID, 0);
-        if (lastPostId > 0) {
-            if (cacheMeizhi == null) {
-                cacheMeizhi = new ArrayList<>();
-                AVQuery<AVPost> query = AVQuery.getQuery(AVPost.class);
-                query.setCachePolicy(AVQuery.CachePolicy.CACHE_ELSE_NETWORK)
-                        .orderByDescending(Keys.POST_ID)
-                        .skip((page - 1) * PAGE_SIZE)
-                        .limit(PAGE_SIZE);
-                query.findInBackground(new FindCallback<AVPost>() {
+        // trim by lastPostId
+        AVQuery<AVPost> query = AVQuery.getQuery(AVPost.class);
+        query.setCachePolicy(AVQuery.CachePolicy.CACHE_ELSE_NETWORK)
+                .orderByDescending(Keys.POST_ID)
+                .skip((page - 1) * PAGE_SIZE)
+                .limit(PAGE_SIZE)
+                .findInBackground(new FindCallback<AVPost>() {
                     @Override
                     public void done(List<AVPost> list, AVException e) {
                         if (e == null) {
+                            List<MeizhiPost> cacheMeizhi = new ArrayList<>();
                             MeizhiPost meizhi;
                             for (int i = 0; i < list.size(); i++) {
                                 meizhi = list.get(i).toMeizhiPost();
+                                // no last post or older than last post
                                 if (lastPostId <= 0 || meizhi.getPostId() <= lastPostId) {
                                     cacheMeizhi.add(meizhi);
                                 }
@@ -92,7 +91,11 @@ public class Meizhi {
                                 }
                             } else {
                                 mIsInitial = false;
-                                loadPage(1, callback);
+                                loadServerPage(1, callback);
+                            }
+
+                            if (mIsInitial) {
+                                fetchNewMeizhi();
                             }
                         } else {
                             HttpUtils.onAvosException(e.getLocalizedMessage());
@@ -102,14 +105,9 @@ public class Meizhi {
                         }
                     }
                 });
-            }
-        } else {
-            mIsInitial = false;
-            loadPage(1, callback);
-        }
     }
 
-    private void loadPage(final int page, final GetMeizhiCallback callback) {
+    private void loadServerPage(final int page, final GetMeizhiCallback callback) {
         String homeUrl = MEIZITU + String.format(SUFFIX_HOME_LIST, page);
         HttpUtils.get(homeUrl, new HttpCallback<List<MeizhiPost>>() {
             @Override
@@ -140,6 +138,25 @@ public class Meizhi {
         });
     }
 
+    private void fetchNewMeizhi() {
+        HttpUtils.get(MEIZITU, new HttpCallback<List<MeizhiPost>>() {
+            @Override
+            public void onResponse(Response response) throws IOException {
+                String gbStr = new String(response.body().bytes(), Charset.forName("gb2312"));
+                Element element = Jsoup.parse(gbStr).body();
+                List<MeizhiPost> posts = new HomeParser(element).toList();
+                // FIXME: 15-10-18 new meizhi display
+                syncLeanCloud(1, posts);
+            }
+
+            @Override
+            public void onFailure(Request request, IOException e) {
+                postResult(null, e);
+                Log.e(this, "onFailure");
+            }
+        });
+    }
+
     private void syncLeanCloud(final int page, final List<MeizhiPost> posts) {
         if (posts == null || posts.size() < 1) {
             return;
@@ -154,27 +171,32 @@ public class Meizhi {
             public void done(List<AVPost> list, AVException e) {
                 if (e == null) {
                     if (list.size() > 0) {
+                        // loop start from oldest post
                         int postIndex = posts.size() - 1;
                         int cacheIndex = list.size() - 1;
                         MeizhiPost latestMeizhi = posts.get(postIndex);
                         AVPost cachePost;
                         while (cacheIndex >= 0) {
                             cachePost = list.get(cacheIndex);
+                            // find latest Meizhi, once it newer than cache posts, loop end.
                             while (cachePost.getPostId() > latestMeizhi.getPostId()) {
                                 if (postIndex >= 1) {
                                     latestMeizhi = posts.get(--postIndex);
                                 }
                             }
+
+                            // if not found, loop next cache, else new posts start from here.
                             if (cachePost.getPostId() >= latestMeizhi.getPostId()) {
                                 cacheIndex--;
                             } else if (cachePost.getPostId() < latestMeizhi.getPostId()) {
                                 if (mIsInitial) {
-                                    EventBus.getDefault().post(new NewPostsEvent(postIndex));
                                     if (newMeizhi == null) {
                                         newMeizhi = new ArrayList<>();
                                     } else {
                                         newMeizhi.clear();
                                     }
+
+                                    EventBus.getDefault().post(new NewPostsEvent(postIndex));
                                 }
 
                                 MeizhiPost post;
