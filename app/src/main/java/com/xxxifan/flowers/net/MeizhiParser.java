@@ -1,9 +1,11 @@
 package com.xxxifan.flowers.net;
 
+import org.jsoup.nodes.Element;
+
 /**
  * Created by xifan on 15-9-29.
  */
-public class Parser {
+public class MeizhiParser {
     public static final String DIV_MAIN = "maincontent";
     public static final String DIV_CONTENT = "picture";
     public static final String DIV_TAG = "metaRight";
@@ -23,7 +25,18 @@ public class Parser {
 
     private static final String tagPattern = "<[^>]*>";
 
+    private Element mElement;
+
+
+    public MeizhiParser(Element element) {
+        mElement = element;
+    }
+
     public static String removeTags(String str) {
         return str.replaceAll(tagPattern, "");
+    }
+
+    protected Element getElement() {
+        return mElement;
     }
 }

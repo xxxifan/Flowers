@@ -11,18 +11,17 @@ import java.util.List;
 /**
  * Created by xifan on 15-9-29.
  */
-public class TimelineParser extends Parser {
+public class TimelineParser extends MeizhiParser {
 
     private static final String COVER_URL = "/limg.jpg";
     private static final String FIRST_URL = "/01.jpg";
-    private Element mElement;
 
     public TimelineParser(Element element) {
-        mElement = element;
+        super(element);
     }
 
     public List<MeizhiPost> toList() {
-        Elements mainElements = mElement.getElementsByClass(CLASS_LIST);
+        Elements mainElements =  getElement().getElementsByClass(CLASS_LIST);
         List<MeizhiPost> meizhiList = new ArrayList<>();
 
         MeizhiPost meizhi;
