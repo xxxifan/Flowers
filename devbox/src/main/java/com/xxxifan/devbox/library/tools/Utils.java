@@ -185,4 +185,7 @@ public class Utils {
         return mWorkerHandler;
     }
 
+    public static boolean isLollipop() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    }
 }

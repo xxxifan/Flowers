@@ -9,4 +9,9 @@ public class Keys {
     public static final String LAST_POST_ID = "lastPostId";
     public static final String LAST_PAGE = "page";
     public static final String POST_ID = "postId";
+    public static final String EXTRA_POST_URL = "postUrl";
+    public static final String EXTRA_COVER_URL = "coverUrl";
+    public static final String EXTRA_MEIZHI = "meizhi";
+
+    public static final String TRANSITION_MEIZHI = EXTRA_MEIZHI;
 }

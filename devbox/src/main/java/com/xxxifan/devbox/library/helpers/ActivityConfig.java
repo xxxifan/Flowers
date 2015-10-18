@@ -4,11 +4,13 @@ import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.LayoutRes;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 
 import com.xxxifan.devbox.library.Devbox;
 import com.xxxifan.devbox.library.R;
 import com.xxxifan.devbox.library.tools.Log;
+import com.xxxifan.devbox.library.tools.Utils;
 import com.xxxifan.devbox.library.ui.BaseActivity;
 
 import java.lang.ref.WeakReference;
@@ -18,7 +20,7 @@ import java.lang.ref.WeakReference;
  */
 public class ActivityConfig {
 
-    private WeakReference<BaseActivity> mActivity;
+    private WeakReference<BaseActivity> mActivityRef;
 
     private DrawerMenuClickListener mMenuClickListener;
 
@@ -36,7 +38,7 @@ public class ActivityConfig {
     private boolean mIsDrawerLayout;
 
     private ActivityConfig(BaseActivity activity) {
-        mActivity = new WeakReference<>(activity);
+        mActivityRef = new WeakReference<>(activity);
     }
 
     public static ActivityConfig newInstance(BaseActivity activity) {
@@ -103,14 +105,14 @@ public class ActivityConfig {
      * whether enable translucent status bar, default true
      */
     public ActivityConfig setTranslucentStatusBar(boolean enable) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && mActivity != null && mActivity.get()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && mActivityRef != null && mActivityRef.get()
                 != null) {
             if (enable) {
-                mActivity.get().getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                mActivityRef.get().getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             } else {
-                mActivity.get().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                mActivityRef.get().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             }
-        } else if (mActivity == null || mActivity.get() == null) {
+        } else if (mActivityRef == null || mActivityRef.get() == null) {
             Log.e(this, "Activity is null! translucent statusbar is not set");
         }
         return this;
@@ -120,15 +122,15 @@ public class ActivityConfig {
      * whether enable translucent nav bar, default false
      */
     public ActivityConfig setTranslucentNavBar(boolean enable) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && mActivity != null && mActivity.get()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && mActivityRef != null && mActivityRef.get()
                 != null) {
             if (enable) {
-                mActivity.get().getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+                mActivityRef.get().getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
             } else {
-                mActivity.get().getWindow().clearFlags(WindowManager.LayoutParams
+                mActivityRef.get().getWindow().clearFlags(WindowManager.LayoutParams
                         .FLAG_TRANSLUCENT_NAVIGATION);
             }
-        } else if (mActivity == null || mActivity.get() == null) {
+        } else if (mActivityRef == null || mActivityRef.get() == null) {
             Log.e(this, "Activity is null! translucent navbar is not set");
         }
         return this;
@@ -147,9 +149,9 @@ public class ActivityConfig {
     }
 
     public ActivityConfig setTheme(int resId) {
-        if (mActivity != null && mActivity.get() != null) {
-            mActivity.get().setTheme(resId);
-        } else if (mActivity == null || mActivity.get() == null) {
+        if (mActivityRef != null && mActivityRef.get() != null) {
+            mActivityRef.get().setTheme(resId);
+        } else if (mActivityRef == null || mActivityRef.get() == null) {
             Log.e(this, "Activity is null! theme is not set");
         }
         return this;
@@ -211,12 +213,32 @@ public class ActivityConfig {
         return this;
     }
 
+    /**
+     * Add window content transition flag
+     */
+    public ActivityConfig setEnableTransition() {
+        if (Utils.isLollipop()) {
+            mActivityRef.get().getWindow().addFlags(Window.FEATURE_CONTENT_TRANSITIONS);
+        }
+        return this;
+    }
+
     @Override
     public String toString() {
-        return super.toString() + "\nmToolbarColor=" + mToolbarColor + "\nmDrawerHeaderResId" +
-                "=" + mDrawerHeaderResId + "\nmUseToolbar=" + mUseToolbar + "\nmShowHomeAsUpKey=" +
-                mShowHomeAsUpKey + "\nmIsFitSystemWindow=" +
-                mIsFitSystemWindow;
+        return "ActivityConfig{" +
+                "mActivityRef=" + mActivityRef +
+                ", mMenuClickListener=" + mMenuClickListener +
+                ", mToolbarColor=" + mToolbarColor +
+                ", mDrawerHeaderResId=" + mDrawerHeaderResId +
+                ", mDrawerIconId=" + mDrawerIconId +
+                ", mDrawerMenuId=" + mDrawerMenuId +
+                ", mContainerId=" + mContainerId +
+                ", mUseToolbar=" + mUseToolbar +
+                ", mIsDarkToolbar=" + mIsDarkToolbar +
+                ", mShowHomeAsUpKey=" + mShowHomeAsUpKey +
+                ", mIsFitSystemWindow=" + mIsFitSystemWindow +
+                ", mIsDrawerLayout=" + mIsDrawerLayout +
+                '}';
     }
 
     public interface DrawerMenuClickListener {

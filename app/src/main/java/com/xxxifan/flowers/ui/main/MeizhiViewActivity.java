@@ -1,15 +1,19 @@
 package com.xxxifan.flowers.ui.main;
 
-import android.graphics.Color;
-import android.os.Bundle;
-import android.app.Activity;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.xxxifan.devbox.library.helpers.ActivityConfig;
 import com.xxxifan.devbox.library.ui.BaseActivity;
 import com.xxxifan.flowers.R;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class MeizhiViewActivity extends BaseActivity {
+
+    @Bind(R.id.meizhi_view)
+    ImageView mMeizhiView;
 
     @Override
     protected void onConfigureActivity(ActivityConfig config) {
@@ -23,7 +27,10 @@ public class MeizhiViewActivity extends BaseActivity {
 
     @Override
     protected void initView(View rootView) {
-
+        ButterKnife.bind(this);
+//        if (Utils.isLollipop()) {
+//            mMeizhiView.setTransitionName(Keys.TRANSITION_MEIZHI);
+//        }
     }
 
 }

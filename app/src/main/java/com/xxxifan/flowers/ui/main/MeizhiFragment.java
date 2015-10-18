@@ -1,5 +1,7 @@
 package com.xxxifan.flowers.ui.main;
 
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.Button;
@@ -9,6 +11,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.xxxifan.devbox.library.AppPref;
+import com.xxxifan.devbox.library.tools.Utils;
 import com.xxxifan.devbox.library.ui.BaseFragment;
 import com.xxxifan.flowers.Keys;
 import com.xxxifan.flowers.R;
@@ -55,6 +58,9 @@ public class MeizhiFragment extends BaseFragment {
     @Override
     protected void initView(View rootView) {
         ButterKnife.bind(this, rootView);
+        if (Utils.isLollipop()) {
+            mMeizhiView.setTransitionName(Keys.TRANSITION_MEIZHI);
+        }
         mMeizhi = new Meizhi();
     }
 
@@ -88,7 +94,16 @@ public class MeizhiFragment extends BaseFragment {
 
     @OnClick(R.id.meizhi_more)
     public void onMoreClick(View view) {
-        // TODO: 15-10-11 mark as like and show more
+        Intent intent = new Intent(getContext(), MeizhiViewActivity.class);
+        intent.putExtra(Keys.EXTRA_MEIZHI, mPosts.get(mCount));
+        if (Utils.isLollipop()) {
+            ActivityOptions options =
+                    ActivityOptions.makeSceneTransitionAnimation(getActivity(), mMeizhiView,
+                            Keys.TRANSITION_MEIZHI);
+            getActivity().startActivity(intent, options.toBundle());
+        } else {
+            startActivity(intent);
+        }
     }
 
     @OnClick(R.id.meizhi_unlike)
