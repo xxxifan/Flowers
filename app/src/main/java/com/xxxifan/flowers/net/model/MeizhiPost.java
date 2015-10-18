@@ -8,7 +8,7 @@ import java.util.Arrays;
 /**
  * Created by xifan on 15-9-30.
  */
-public class MeizhiPost implements Parcelable {
+public class MeizhiPost implements Parcelable, Comparable<MeizhiPost> {
 
     public static final Parcelable.Creator<MeizhiPost> CREATOR = new Parcelable.Creator<MeizhiPost>() {
         public MeizhiPost createFromParcel(Parcel source) {
@@ -99,5 +99,10 @@ public class MeizhiPost implements Parcelable {
         dest.writeString(this.imgId);
         dest.writeStringArray(this.tags);
         dest.writeInt(this.postId);
+    }
+
+    @Override
+    public int compareTo(MeizhiPost another) {
+        return another == null ? 1 : (another.getPostId() - getPostId());
     }
 }

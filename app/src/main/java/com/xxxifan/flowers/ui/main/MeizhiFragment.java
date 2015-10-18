@@ -19,6 +19,7 @@ import com.xxxifan.flowers.net.Meizhi;
 import com.xxxifan.flowers.net.callback.GetMeizhiCallback;
 import com.xxxifan.flowers.net.model.MeizhiPost;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -124,14 +125,14 @@ public class MeizhiFragment extends BaseFragment {
     }
 
     public void onEventMainThread(NewPostsEvent event) {
-        Snackbar.make(mTitleText, getString(R.string.tip_new_flowers_ready, event.num), Snackbar.LENGTH_LONG)
+        Snackbar.make(mTitleText, R.string.tip_new_flowers_ready, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.btn_view, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (mMeizhi == null) {
                             mMeizhi = new Meizhi();
                         }
-                        mMeizhi.getNewest(new MeizhiNewestCallback());
+                        mMeizhi.getNewMeizhi(new MeizhiNewestCallback());
                     }
                 })
                 .show();
@@ -169,15 +170,16 @@ public class MeizhiFragment extends BaseFragment {
         @Override
         public void onMeizhi(List<MeizhiPost> meizhiList) {
             setIsLoadingPage(false);
+            if (meizhiList != null) {
+                if (mPosts != null) {
+                    mPosts.clear();
+                }
+                mPosts = meizhiList;
 
-            if (mPosts != null) {
-                mPosts.clear();
+                mCount = 0;
+                MeizhiPost post = meizhiList.get(mCount);
+                setupMeizhi(post);
             }
-            mPosts = meizhiList;
-
-            mCount = 0;
-            MeizhiPost post = meizhiList.get(mCount);
-            setupMeizhi(post);
         }
 
         @Override
@@ -191,11 +193,14 @@ public class MeizhiFragment extends BaseFragment {
         @Override
         public void onMeizhi(List<MeizhiPost> meizhiList) {
             setIsLoadingPage(false);
-
             if (meizhiList != null) {
                 if (mPosts == null) {
-                    mPosts = meizhiList;
+                    mPosts = new ArrayList<>();
                 } else {
+                    for (int i = 0; i <= mCount; i++) {
+                        // remove read items
+                        mPosts.remove(i);
+                    }
                     mPosts.addAll(0, meizhiList);
                 }
 
