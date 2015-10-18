@@ -1,6 +1,5 @@
 package com.xxxifan.flowers.ui.main;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -96,14 +95,14 @@ public class MeizhiFragment extends BaseFragment {
     public void onMoreClick(View view) {
         Intent intent = new Intent(getContext(), MeizhiViewActivity.class);
         intent.putExtra(Keys.EXTRA_MEIZHI, mPosts.get(mCount));
-        if (Utils.isLollipop()) {
-            ActivityOptions options =
-                    ActivityOptions.makeSceneTransitionAnimation(getActivity(), mMeizhiView,
-                            Keys.TRANSITION_MEIZHI);
-            getActivity().startActivity(intent, options.toBundle());
-        } else {
+//        if (Utils.isLollipop()) {
+//            ActivityOptions options =
+//                    ActivityOptions.makeSceneTransitionAnimation(getActivity(), mMeizhiView,
+//                            Keys.TRANSITION_MEIZHI);
+//            getActivity().startActivity(intent, options.toBundle());
+//        } else {
             startActivity(intent);
-        }
+//        }
     }
 
     @OnClick(R.id.meizhi_unlike)
