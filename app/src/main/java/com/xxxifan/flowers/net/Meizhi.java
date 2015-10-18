@@ -34,12 +34,13 @@ public class Meizhi {
     public static final String IMG_URL_BASE = "http://pic.meizitu.com/wp-content/uploads/";
 
     private static final int PAGE_SIZE = 30;
-    private final int mLastPage;
 
     private List<MeizhiPost> newMeizhi;
     private List<MeizhiPost> cacheMeizhi;
     private boolean mIsInitial;
     private int mPage;
+    // last cached page
+    private final int mLastPage;
 
     public Meizhi() {
         mLastPage = AppPref.getInt(Keys.LAST_PAGE, 0);
@@ -140,6 +141,9 @@ public class Meizhi {
     }
 
     private void syncLeanCloud(final int page, final List<MeizhiPost> posts) {
+        if (posts == null || posts.size() < 1) {
+            return;
+        }
         AVQuery<AVPost> query = AVQuery.getQuery(AVPost.class);
         query.setCachePolicy(AVQuery.CachePolicy.NETWORK_ELSE_CACHE)
                 .orderByDescending(Keys.POST_ID)
