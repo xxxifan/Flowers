@@ -3,6 +3,8 @@ package com.xxxifan.flowers.net.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.xxxifan.flowers.net.avos.model.AVPost;
+
 import java.util.Arrays;
 
 /**
@@ -30,6 +32,7 @@ public class MeizhiPost implements Parcelable, Comparable<MeizhiPost> {
     public String imgId;
     public String[] tags;
     private int postId;
+    private String objectId;
 
     public MeizhiPost() {
     }
@@ -45,6 +48,12 @@ public class MeizhiPost implements Parcelable, Comparable<MeizhiPost> {
         this.imgMonth = imgMonth;
         this.imgId = imgId;
         this.tags = tags;
+    }
+
+    public MeizhiPost(AVPost post) {
+        this(post.getLikeNum(), post.getUnlikeNum(), post.getTitle(), post.getPostUrl(),
+                post.getCoverUrl(), post.getImgYear(), post.getImgMonth(), post.getImgId(), post.getTags());
+        objectId = post.getObjectId();
     }
 
     protected MeizhiPost(Parcel in) {
@@ -67,6 +76,10 @@ public class MeizhiPost implements Parcelable, Comparable<MeizhiPost> {
         }
 
         return postId;
+    }
+
+    public String getObjectId() {
+        return objectId;
     }
 
     @Override

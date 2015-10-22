@@ -60,7 +60,7 @@ public class Meizhi {
     }
 
 
-    public void getNewMeizhi(GetMeizhiCallback callback) {
+    public void loadNewMeizhi(GetMeizhiCallback callback) {
         if (callback != null) {
             callback.onMeizhi(newMeizhi);
         }

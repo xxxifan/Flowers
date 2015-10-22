@@ -41,7 +41,7 @@
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_large" />
                 <TextView
-                    android:id="@+id/meizhi_intro"
+                    android:id="@+id/meizhi_tags"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 

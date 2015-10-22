@@ -1,6 +1,7 @@
 package com.xxxifan.flowers.net.avos.model;
 
 import com.avos.avoscloud.AVClassName;
+import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.xxxifan.flowers.net.model.MeizhiPost;
 
@@ -11,17 +12,23 @@ import com.xxxifan.flowers.net.model.MeizhiPost;
 public class AVPost extends AVObject {
 
     public static AVPost fromMeizhiPost(MeizhiPost post) {
-        AVPost avPost = new AVPost();
-        avPost.setCoverUrl(post.coverUrl);
-        avPost.setImgId(post.imgId);
-        avPost.setImgMonth(post.imgMonth);
-        avPost.setImgYear(post.imgYear);
-        avPost.setPostUrl(post.postUrl);
-        avPost.setTags(post.tags);
-        avPost.setTitle(post.title);
-        avPost.setPostId(post.getPostId());
-        avPost.setLikeNum(post.likeNum);
-        avPost.setUnlikeNum(post.unlikeNum);
+        AVPost avPost = null;
+        try {
+            avPost = AVPost.createWithoutData(AVPost.class, post.getObjectId());
+            avPost.setCoverUrl(post.coverUrl);
+            avPost.setImgId(post.imgId);
+            avPost.setImgMonth(post.imgMonth);
+            avPost.setImgYear(post.imgYear);
+            avPost.setPostUrl(post.postUrl);
+            avPost.setTags(post.tags);
+            avPost.setTitle(post.title);
+            avPost.setPostId(post.getPostId());
+            avPost.setLikeNum(post.likeNum);
+            avPost.setUnlikeNum(post.unlikeNum);
+        } catch (AVException e) {
+            e.printStackTrace();
+        }
+
         return avPost;
     }
 
@@ -119,7 +126,6 @@ public class AVPost extends AVObject {
     }
 
     public MeizhiPost toMeizhiPost() {
-        return new MeizhiPost(getLikeNum(), getUnlikeNum(), getTitle(), getPostUrl(), getCoverUrl(),
-                getImgYear(), getImgMonth(), getImgId(), getTags());
+        return new MeizhiPost(this);
     }
 }

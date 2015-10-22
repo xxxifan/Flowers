@@ -16,10 +16,12 @@ import com.xxxifan.flowers.Keys;
 import com.xxxifan.flowers.R;
 import com.xxxifan.flowers.event.NewPostsEvent;
 import com.xxxifan.flowers.net.Meizhi;
+import com.xxxifan.flowers.net.avos.model.AVPost;
 import com.xxxifan.flowers.net.callback.GetMeizhiCallback;
 import com.xxxifan.flowers.net.model.MeizhiPost;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.Bind;
@@ -35,15 +37,14 @@ public class MeizhiFragment extends BaseFragment {
     ImageView mMeizhiView;
     @Bind(R.id.meizhi_title)
     TextView mTitleText;
+    @Bind(R.id.meizhi_tags)
+    TextView mTagText;
     @Bind(R.id.meizhi_like)
     Button mLikeBtn;
     @Bind(R.id.meizhi_more)
     Button mMoreBtn;
     @Bind(R.id.meizhi_unlike)
     Button nextBtn;
-
-    @Bind(R.id.meizhi_intro)
-    TextView mIntroText;
 
     private Meizhi mMeizhi;
     private List<MeizhiPost> mPosts;
@@ -61,7 +62,6 @@ public class MeizhiFragment extends BaseFragment {
         if (Utils.isLollipop()) {
             mMeizhiView.setTransitionName(Keys.TRANSITION_MEIZHI);
         }
-        mMeizhi = new Meizhi();
     }
 
     @Override
@@ -78,6 +78,9 @@ public class MeizhiFragment extends BaseFragment {
 
     @Override
     protected boolean onDataLoad() {
+        if (mMeizhi == null) {
+            mMeizhi = new Meizhi();
+        }
         setIsLoadingPage(true);
         mMeizhi.get(new MeizhiPageCallback());
         return true;
@@ -101,6 +104,7 @@ public class MeizhiFragment extends BaseFragment {
     @OnClick(R.id.meizhi_like)
     public void onLikeClick(View view) {
         // TODO: 15-10-11 mark as like
+        likeMeizhi();
         nextMeizhi();
     }
 
@@ -114,13 +118,13 @@ public class MeizhiFragment extends BaseFragment {
 //                            Keys.TRANSITION_MEIZHI);
 //            getActivity().startActivity(intent, options.toBundle());
 //        } else {
-            startActivity(intent);
+        startActivity(intent);
 //        }
     }
 
     @OnClick(R.id.meizhi_unlike)
     public void onUnlikeClick(View view) {
-        // TODO: 15-10-11 mark as unlike
+        unlikeMeizhi();
         nextMeizhi();
     }
 
@@ -132,17 +136,33 @@ public class MeizhiFragment extends BaseFragment {
                         if (mMeizhi == null) {
                             mMeizhi = new Meizhi();
                         }
-                        mMeizhi.getNewMeizhi(new MeizhiNewestCallback());
+                        mMeizhi.loadNewMeizhi(new MeizhiNewestCallback());
                     }
                 })
                 .show();
+    }
+
+    private void likeMeizhi() {
+        if (mPosts != null) {
+            AVPost post = AVPost.fromMeizhiPost(mPosts.get(mCount));
+            post.setLikeNum(post.getLikeNum() + 1);
+            post.saveInBackground();
+        }
+    }
+
+    private void unlikeMeizhi() {
+        if (mPosts != null) {
+            AVPost post = AVPost.fromMeizhiPost(mPosts.get(mCount));
+            post.setUnlikeNum(post.getUnlikeNum() + 1);
+            post.saveInBackground();
+        }
     }
 
     private void nextMeizhi() {
         if (mPosts != null && !isLoadingPage()) {
             if (mCount < mPosts.size() - 1) {
                 mCount++;
-                setupMeizhi(mPosts.get(mCount));
+                showMeizhi(mPosts.get(mCount));
             } else {
                 setIsLoadingPage(true);
                 mMeizhi.get(new MeizhiPageCallback());
@@ -151,10 +171,12 @@ public class MeizhiFragment extends BaseFragment {
         }
     }
 
-    private void setupMeizhi(MeizhiPost post) {
-        mIntroText.setText(mPosts.get(mCount).coverUrl);
+    private void showMeizhi(MeizhiPost post) {
+        MeizhiPost meizhiPost = mPosts.get(mCount);
+        mTitleText.setText(meizhiPost.title);
+        mTagText.setText(meizhiPost.tags == null ? "" : Arrays.toString(meizhiPost.tags)
+                .replace("[", "").replace("]", ""));
         Glide.with(getContext()).load(post.coverUrl).into(mMeizhiView);
-        mTitleText.setText(mPosts.get(mCount).title);
     }
 
     private boolean isLoadingPage() {
@@ -178,7 +200,7 @@ public class MeizhiFragment extends BaseFragment {
 
                 mCount = 0;
                 MeizhiPost post = meizhiList.get(mCount);
-                setupMeizhi(post);
+                showMeizhi(post);
             }
         }
 
@@ -206,7 +228,7 @@ public class MeizhiFragment extends BaseFragment {
 
                 mCount = 0;
                 MeizhiPost post = meizhiList.get(mCount);
-                setupMeizhi(post);
+                showMeizhi(post);
             }
         }
 
