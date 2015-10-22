@@ -20,6 +20,7 @@ public class MeizhiParser {
     public static final String ATTR_ALT = "alt";
     public static final String CLASS_LIST = "wp-list";
     public static final String CLASS_POST_META = "postmeta";
+    public static final String CLASS_META_RIGHT = "metaRight";
     public static final String CLASS_POST_CONTENT = "postContent";
     public static final String CLASS_DAY = "day";
 

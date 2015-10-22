@@ -1,6 +1,7 @@
 package com.xxxifan.flowers.net;
 
 import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.FindCallback;
 import com.squareup.okhttp.Request;
@@ -226,6 +227,37 @@ public class Meizhi {
                     }
                 } else {
                     HttpUtils.onAvosException(e.getLocalizedMessage());
+                }
+            }
+        });
+    }
+
+    public void fetchTags(String url, final String objectId) {
+        if (url == null) {
+            return;
+        }
+        HttpUtils.get(url, new HttpCallback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                postResult(null, e);
+                Log.e(this, "onFailure");
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                String gbStr = new String(response.body().bytes(), Charset.forName("gb2312"));
+                Element element = Jsoup.parse(gbStr).body();
+                String[] tags = new HomeParser(element).getTags();
+                if (tags == null || tags.length < 1) {
+                    return;
+                }
+
+                try {
+                    AVPost post = AVObject.createWithoutData(AVPost.class, objectId);
+                    post.setTags(tags);
+                    post.saveInBackground();
+                } catch (AVException e) {
+                    e.printStackTrace();
                 }
             }
         });

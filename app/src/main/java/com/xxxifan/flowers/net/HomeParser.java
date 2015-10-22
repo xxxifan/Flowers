@@ -18,13 +18,31 @@ public class HomeParser extends MeizhiParser {
         super(element);
     }
 
+    public String[] getTags() {
+        Elements elements = getElement().getElementsByClass(CLASS_META_RIGHT);
+        if (elements.size() > 0) {
+            Elements pTag = elements.get(0).getElementsByTag(TAG_P);
+            for (Element tag : pTag) {
+                String tagText = tag.text();
+                if (!TextUtils.isEmpty(tagText) && tagText.startsWith("Tags:")) {
+                    return tagText
+                            .replace("Tags:", "")
+                            .replace(" ", "")
+                            .trim()
+                            .split(",");
+                }
+            }
+        }
+        return new String[0];
+    }
+
     public List<MeizhiPost> toList() {
         Elements mainElements = getElement().getElementsByAttributeValue(KEY_ID, DIV_MAIN);
         List<MeizhiPost> meizhiList = new ArrayList<>();
 
         int count = 0;
         Elements contentElements = mainElements.attr(KEY_ID, DIV_CONTENT).first().children();
-        MeizhiPost meizhi = null;
+        MeizhiPost meizhi;
         for (Element item : contentElements) {
             if (item.className().startsWith(CLASS_POST_META)) {
                 Elements pTags = item.getElementsByTag(TAG_P);
