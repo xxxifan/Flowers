@@ -144,7 +144,7 @@ public class MeizhiFragment extends BaseFragment {
 
     private void likeMeizhi() {
         if (mPosts != null) {
-            AVPost post = AVPost.fromMeizhiPost(mPosts.get(mCount));
+            AVPost post = AVPost.fromMeizhiPost(mPosts.get(mCount), true);
             post.setLikeNum(post.getLikeNum() + 1);
             post.saveInBackground();
         }
@@ -152,7 +152,7 @@ public class MeizhiFragment extends BaseFragment {
 
     private void unlikeMeizhi() {
         if (mPosts != null) {
-            AVPost post = AVPost.fromMeizhiPost(mPosts.get(mCount));
+            AVPost post = AVPost.fromMeizhiPost(mPosts.get(mCount), true);
             post.setUnlikeNum(post.getUnlikeNum() + 1);
             post.saveInBackground();
         }

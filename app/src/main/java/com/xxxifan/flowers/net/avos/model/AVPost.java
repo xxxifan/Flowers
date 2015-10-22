@@ -12,19 +12,29 @@ import com.xxxifan.flowers.net.model.MeizhiPost;
 public class AVPost extends AVObject {
 
     public static AVPost fromMeizhiPost(MeizhiPost post) {
+        return fromMeizhiPost(post, false);
+    }
+
+    /**
+     * create a AVPost from MeizhiPost
+     * @param update true if attempt to update this object value.
+     */
+    public static AVPost fromMeizhiPost(MeizhiPost post, boolean update) {
         AVPost avPost = null;
         try {
             avPost = AVPost.createWithoutData(AVPost.class, post.getObjectId());
-            avPost.setCoverUrl(post.coverUrl);
-            avPost.setImgId(post.imgId);
-            avPost.setImgMonth(post.imgMonth);
-            avPost.setImgYear(post.imgYear);
-            avPost.setPostUrl(post.postUrl);
-            avPost.setTags(post.tags);
-            avPost.setTitle(post.title);
-            avPost.setPostId(post.getPostId());
-            avPost.setLikeNum(post.likeNum);
-            avPost.setUnlikeNum(post.unlikeNum);
+            if (!update) {
+                avPost.setCoverUrl(post.coverUrl);
+                avPost.setImgId(post.imgId);
+                avPost.setImgMonth(post.imgMonth);
+                avPost.setImgYear(post.imgYear);
+                avPost.setPostUrl(post.postUrl);
+                avPost.setTags(post.tags);
+                avPost.setTitle(post.title);
+                avPost.setPostId(post.getPostId());
+                avPost.setLikeNum(post.likeNum);
+                avPost.setUnlikeNum(post.unlikeNum);
+            }
         } catch (AVException e) {
             e.printStackTrace();
         }
