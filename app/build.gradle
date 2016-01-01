@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         applicationId "com.xxxifan.flowers"
@@ -29,12 +29,13 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(":devbox")
-    compile 'com.android.support:cardview-v7:23.1.0'
+    compile 'com.android.support:cardview-v7:23.1.1'
     compile 'org.jsoup:jsoup:1.8.3'
-    compile 'io.reactivex:rxandroid:1.0.1'
+    compile 'io.reactivex:rxandroid:1.1.0'
+    compile 'io.reactivex:rxjava:1.1.0'
 
-    compile ('cn.leancloud.android:avoscloud-sdk:v3.9.1'){
+    compile ('cn.leancloud.android:avoscloud-sdk:v3.12'){
         exclude module: 'fastjson'
     }
-    compile 'cn.leancloud.android:avoscloud-statistics:v3.9.1@aar'
+    compile 'cn.leancloud.android:avoscloud-statistics:v3.12@aar'
 }
